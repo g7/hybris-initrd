@@ -53,8 +53,8 @@ if test -z "$PHYSDEV"; then
 	exit 1
 fi
 
-ROOTDEV="/dev/sailfish/root"
-HOMEDEV="/dev/sailfish/home"
+ROOTDEV="/dev/sailfish81/root"
+HOMEDEV="/dev/sailfish81/home"
 MOUNT_POINT=$1
 
 LVM_RESERVED_KB=$(expr $LVM_RESERVED_MB \* 1024)
@@ -67,8 +67,8 @@ check_firstboot_resize()
 		return 0
 	fi
 
-	FREE_EXTENTS=$(lvm vgdisplay sailfish -c | cut -d ":" -f 16)
-	EXTENT_SIZE=$(lvm vgdisplay sailfish -c | cut -d ":" -f 13)
+	FREE_EXTENTS=$(lvm vgdisplay sailfish81 -c | cut -d ":" -f 16)
+	EXTENT_SIZE=$(lvm vgdisplay sailfish81 -c | cut -d ":" -f 13)
 	FREE_KB=$(expr $FREE_EXTENTS \* $EXTENT_SIZE)
 
 	# lvextend returns error if a partition was resized already,
@@ -85,7 +85,7 @@ check_firstboot_resize()
 	resize2fs -f "$ROOTDEV" > /dev/kmsg
 
 	# Check how much space we can add to home
-	FREE_EXTENTS=$(lvm vgdisplay sailfish -c | cut -d ":" -f 16)
+	FREE_EXTENTS=$(lvm vgdisplay sailfish81 -c | cut -d ":" -f 16)
 
 	# lvextend returns error if a partition was resized already.
 	if test "$FREE_EXTENTS" -gt 0; then
@@ -170,7 +170,7 @@ factory_reset_if_needed()
 lvm pvresize $PHYSDEV
 
 # Activate LVs on sailfish volume group
-if ! lvm vgchange -a y sailfish; then
+if ! lvm vgchange -a y sailfish81; then
 	# TODO: Consider doing a factory reset here instead of aborting...
 	#reset_factory_image
 	log "No sailfish VG found, aborting system boot!"
